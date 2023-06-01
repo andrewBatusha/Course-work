@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="es" xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Items</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet"
+          integrity="sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM" crossorigin="anonymous">
+
+
+    <style>
+        body {
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .item-card {
+            margin-bottom: 20px;
+        }
+
+        .item-image {
+            max-height: 200px;
+            object-fit: cover;
+        }
+    </style>
+</head>
+
+<body>
+<div class="container">
+    <h1 class="display-4">CPU</h1>
+
+    <nav>
+        <ul class="pagination justify-content-center">
+            <li class="page-item disabled">
+                <a class="page-link" href="#" tabindex="-1" aria-disabled="true">Previous</a>
+            </li>
+            <li class="page-item" aria-current="page">
+                <a class="page-link" href="#" onclick="changeActivePage(event, 1, '/v1/items?page=1')">1</a>
+            </li>
+            <li class="page-item">
+                <a class="page-link" href="#" onclick="changeActivePage(event, 2, '/v1/items?page=2')">2</a>
+            </li>
+            <li class="page-item">
+                <a class="page-link" href="#" onclick="changeActivePage(event, 3, '/v1/items?page=3')">3</a>
+            </li>
+            <li class="page-item">
+                <a class="page-link" href="#">Next</a>
+            </li>
+        </ul>
+    </nav>
+
+    <div class="row row-cols-1 row-cols-md-3 g-4">
+        <!-- Iterate over items -->
+        <div th:each="item : ${items}" class="col">
+            <div class="card item-card">
+                <img class="card-img-top item-image" th:src="@{'https://source.unsplash.com/random/400x200??amd'}"
+                     alt="Item Image">
+                <div class="card-body">
+                    <h5 class="card-title" th:text="${item.name}"></h5>
+                    <p class="card-text">
+                        Price: <span class="item-price"></span>
+                    </p>
+                    <a class="btn btn-primary" th:href="@{/v1/items/{id}(id=${item.id})}">
+                        <i class="fas fa-eye"></i>
+                    </a>
+                    <a class="btn btn-warning"
+                       th:href="@{/v1/items/edit/{id}(id=${item.id})}">
+                        <i class="fas fa-pencil-alt"></i>
+                    </a>
+                    <a class="btn btn-danger"
+                       th:href="@{/v1/items/delete/{id}(id=${item.id})}"
+                       onclick="return confirm('Are you sure you want to delete this item?');">
+                        <i class="fas fa-trash-alt"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <a class="btn btn-primary" href="/v1/items/add">
+        <i class="fas fa-plus"></i> Add Item
+    </a>
+</div>
+
+
+<script>
+        // Generate random price between 100 and 1000
+        function generateRandomPrice() {
+            var min = 100;
+            var max = 1000;
+            var randomPrice = Math.floor(Math.random() * (max - min + 1) + min);
+            return randomPrice;
+        }
+
+        // Update the price field with the generated random price
+        function updatePriceField() {
+            var priceElements = document.getElementsByClassName("item-price");
+            for (var i = 0; i < priceElements.length; i++) {
+                var priceElement = priceElements[i];
+                priceElement.textContent = "$" + generateRandomPrice().toFixed(2);
+            }
+        }
+
+        // Call the function to update the price field
+        updatePriceField();
+    </script>
+
+<script>
+        // Variable to store the active page number
+        let activePage = 1;
+
+        function changeActivePage(event, pageNumber, url) {
+            event.preventDefault();
+
+            // Remove the 'active' class from the current active page link
+            const activeLink = document.querySelector('.pagination .page-item.active');
+            activeLink.classList.remove('active');
+
+            // Add the 'active' class to the clicked page link
+            event.target.parentElement.classList.add('active');
+
+            // Update the active page number
+            activePage = pageNumber;
+
+            // Perform any additional actions, such as making an AJAX request to load the new page content
+
+            // Optional: Scroll to the top of the page
+            window.scrollTo(0, 0);
+
+            // Navigate to the specified URL
+            window.location.href = url;
+        }
+
+        // Set the active page link based on the stored active page number
+        const pageLinks = document.querySelectorAll('.pagination .page-item');
+        pageLinks[activePage - 1].classList.add('active');
+
+
+
+</script>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-geWF76RCwLtnZ8qwWowPQNguL3RmwHVBC9FhGdlKrxdiJJigb/j/68SIy3Te4Bkz"
+        crossorigin="anonymous"></script>
+
+</body>
+
+</html>
